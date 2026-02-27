@@ -1,0 +1,27 @@
+name: "Check Runner Specs"
+
+on: 
+  workflow_dispatch: # This lets you click a "Play" button to run it manually
+
+jobs:
+  check-system:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install btop
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y btop
+
+      - name: System Information Snapshot
+        run: |
+          echo "--- HARDWARE SUMMARY ---"
+          lscpu | grep -E "Model name|CPU\(s\):|Thread\(s\) per core"
+          free -h
+          df -h /
+          
+      - name: Run btop (Snapshot Mode)
+        run: |
+          # We use btop's --stateless flag if available, 
+          # otherwise we just let it run once and kill it.
+          btop --version
+          timeout 120s btop
