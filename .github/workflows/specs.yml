@@ -1,30 +1,19 @@
-name: "Check Runner Specs"
+name: "Fastfetch Runner Specs"
 
 on: 
-  workflow_dispatch: # This lets you click a "Play" button to run it manually
+  workflow_dispatch: # Run it manually with the 'Play' button
 
 jobs:
-  check-system:
+  fetch-specs:
     runs-on: ubuntu-latest
     steps:
-      - name: Install btop
+      - name: Install Fastfetch
         run: |
+          sudo add-apt-repository ppa:zhangsongcui3371/fastfetch -y
           sudo apt-get update
-          sudo apt-get install -y btop
+          sudo apt-get install -y fastfetch
 
-      - name: System Information Snapshot
+      - name: Run Fastfetch
         run: |
-          echo "--- HARDWARE SUMMARY ---"
-          lscpu | grep -E "Model name|CPU\(s\):|Thread\(s\) per core"
-          free -h
-          df -h /
-          
-      - name: Run btop (Snapshot)
-        run: |
-          # 1. Install btop
-          sudo apt-get update && sudo apt-get install -y btop
-          
-          # 2. Fake a terminal (TTY) to satisfy btop
-          # We run it for 5 seconds to let it calibrate, then kill it.
-          # The 'sed' command removes the colorful "messy" terminal codes.
-          script -q -c "timeout 5s btop" /dev/null | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'
+          # --pipe false forces colors to show up in GitHub logs
+          fastfetch --pipe false
