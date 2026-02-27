@@ -19,9 +19,12 @@ jobs:
           free -h
           df -h /
           
-      - name: Run btop (Snapshot Mode)
+      - name: Run btop (Snapshot)
         run: |
-          # We use btop's --stateless flag if available, 
-          # otherwise we just let it run once and kill it.
-          btop --version
-          timeout 120s btop
+          # 1. Install btop
+          sudo apt-get update && sudo apt-get install -y btop
+          
+          # 2. Fake a terminal (TTY) to satisfy btop
+          # We run it for 5 seconds to let it calibrate, then kill it.
+          # The 'sed' command removes the colorful "messy" terminal codes.
+          script -q -c "timeout 5s btop" /dev/null | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'
